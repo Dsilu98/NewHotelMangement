@@ -1,16 +1,13 @@
 spring:
   application:
-    name: Api-Gateway
-
+    name: Config-Server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Dsilu98/MicroServiceConfig.git
+          clone-on-start: true
+        
 server:
   port: 8081
 
-eureka:
-  instance:
-    prefer-ip-address: true 
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: 
-        localhost: http://locathost/8761/eureka
