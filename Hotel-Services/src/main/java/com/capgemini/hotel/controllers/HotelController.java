@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capgemini.hotel.Services.impl.HotelServiceImpl;
 import com.capgemini.hotel.entities.Hotel;
-
-import jakarta.ws.rs.Path;
 
 @RestController
 @RequestMapping("/hotels")
@@ -43,13 +42,13 @@ public class HotelController {
 		return ResponseEntity.status(HttpStatus.FOUND).body(allHotels);
 	}
 	//update
-	@PostMapping("/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Hotel> updateHotel(@PathVariable String id,@RequestBody Hotel hotel){
 		Hotel updatedHotel = impl.updateHotel(id, hotel);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedHotel);
 	}
 	//delete
-	@DeleteMapping("/{}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteHotelById(@PathVariable String id){
 		String message = impl.deletHotel(id);
 		return ResponseEntity.status(HttpStatus.OK).body(message);
