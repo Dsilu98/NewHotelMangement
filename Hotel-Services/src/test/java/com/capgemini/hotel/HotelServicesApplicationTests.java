@@ -1,10 +1,10 @@
-package com.capgemini.gateway;
+package com.capgemini.hotel;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApiGatewayApplicationTests {
+class HotelServicesApplicationTests {
 
 	@Test
 	void contextLoads() {
