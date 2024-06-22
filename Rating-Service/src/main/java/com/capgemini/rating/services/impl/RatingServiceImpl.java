@@ -32,7 +32,6 @@ public class RatingServiceImpl implements RatingService{
 	@Override
 	public List<Rating> getAllRatings() {
 		List<Rating> allRatings = repositories.findAll();
-		if(allRatings.isEmpty()) throw new ResourceNotFound("Rating can't be found for the raying id : ");
 		return allRatings;
 		
 	}
