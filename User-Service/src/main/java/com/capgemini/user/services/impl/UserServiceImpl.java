@@ -5,10 +5,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.capgemini.user.entities.Hotel;
 import com.capgemini.user.entities.Rating;
 import com.capgemini.user.entities.User;
 import com.capgemini.user.exceptions.ResourceNotFound;
@@ -37,6 +37,22 @@ public class UserServiceImpl implements UserServices{
 	@Override
 	public User getUserById(String id) {
 		User user = repository.findById(id).orElseThrow(()->new ResourceNotFound("User not foun with user id : "+id));
+		
+		ResponseEntity<List<Rating>> ratingResponce = ratingService.getRatingsByUserId(id);
+		List<Rating> ratingList = ratingResponce.getBody();
+		if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
+			ratingList.stream()
+				.map(rating->{
+					ResponseEntity<Hotel> hotelResponse= hotelService.getHotelById(rating.getHotelId());
+					Hotel hotel= hotelResponse.getBody();
+					if(hotelResponse.getStatusCode().is2xxSuccessful() && hotel !=null) {
+						rating.setHotel(hotel);
+					}
+					return rating;
+				}).collect(Collectors.toList());
+			user.setRating(ratingList);
+		}
+		
 		return user;
 	}
 
@@ -44,6 +60,32 @@ public class UserServiceImpl implements UserServices{
 	public List<User> getAllUsers() {
 		List<User> allUser = repository.findAll();
 		if(allUser.isEmpty()) throw new ResourceNotFound("No users found");
+		
+		allUser.stream()
+			.map(user->{
+				
+				String userId = user.getUserId();
+				
+				ResponseEntity<List<Rating>> ratingResponce = ratingService.getRatingsByUserId(userId);
+				List<Rating> ratingList = ratingResponce.getBody();
+				
+				if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
+					ratingList.stream()
+						.map(rating->{
+							ResponseEntity<Hotel> hotelResponse= hotelService.getHotelById(rating.getHotelId());
+							Hotel hotel= hotelResponse.getBody();
+							if(hotelResponse.getStatusCode().is2xxSuccessful() && hotel !=null) {
+								rating.setHotel(hotel);
+							}
+							else {
+								rating.setHotel(null);
+							}
+							return rating;
+						}).collect(Collectors.toList());
+					user.setRating(ratingList);
+				}
+				return user;
+			}).collect(Collectors.toList());
 		
 		return allUser;
 	}
@@ -64,8 +106,13 @@ public class UserServiceImpl implements UserServices{
 		repository.deleteById(id);
 	}
 	
-	public List<Rating> getAllRatings(){
-		return  ratingService.getAllRatings().getBody();
+	public List<Rating> getRatingByUserId(String id){
+		ResponseEntity<List<Rating>> ratingResponce = ratingService.getRatingsByUserId(id);
+		List<Rating> ratingList = ratingResponce.getBody();
+		if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
+			return ratingList;
+		}
+		return null;
 	}
 
 }

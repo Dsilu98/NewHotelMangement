@@ -50,7 +50,7 @@ public class HotelServiceImpl implements HotelService{
 	@Override
 	public List<Hotel> getAllHotels() {
 		List<Hotel> allHotels = repository.findAll();
-		if(allHotels.isEmpty()) throw new ResourceNotFound("Not Hotel Data Present");
+//		if(allHotels.isEmpty()) throw new ResourceNotFound("Not Hotel Data Present");
 		
 		return allHotels;
 	}

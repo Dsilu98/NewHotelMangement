@@ -25,33 +25,33 @@ public class RatingController {
 	public RatingServiceImpl impl;
 	//create
 	@PostMapping("/")
-	public ResponseEntity<Rating> createHotel(@RequestBody Rating rating){
+	public ResponseEntity<Rating> createRating(@RequestBody Rating rating){
 		Rating newRating = impl.createRating(rating);
 		return ResponseEntity.status(HttpStatus.CREATED).body(newRating);
 	}
 	//read
 	@GetMapping("/")
-	public ResponseEntity<List<Rating>> getAllHotels(){
+	public ResponseEntity<List<Rating>> getAllRatings(){
 		List<Rating> allRatings = impl.getAllRatings();
-		return ResponseEntity.status(HttpStatus.FOUND).body(allRatings);
+		return ResponseEntity.status(HttpStatus.OK).body(allRatings);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Rating> getRatingById(@PathVariable String id){
 		Rating rating = impl.getRatingById(id);
-		return ResponseEntity.status(HttpStatus.FOUND).body(rating);
+		return ResponseEntity.status(HttpStatus.OK).body(rating);
 	}
 	
 	
 	@GetMapping("/hotels/{hotelId}")
 	public ResponseEntity<List<Rating>> getRatingByHotelId(@PathVariable String hotelId){
 		List<Rating> ratings = impl.getRatingByHotelId(hotelId);
-		return ResponseEntity.status(HttpStatus.FOUND).body(ratings);
+		return ResponseEntity.status(HttpStatus.OK).body(ratings);
 	}
 	@GetMapping("/users/{userId}")
 	public ResponseEntity<List<Rating>> getRatingByUserId(@PathVariable String userId){
 		List<Rating> ratings = impl.getRatingByUserId(userId);
-		return ResponseEntity.status(HttpStatus.FOUND).body(ratings);
+		return ResponseEntity.status(HttpStatus.OK).body(ratings);
 	}
 	
 	//update
@@ -67,4 +67,6 @@ public class RatingController {
 		return ResponseEntity.status(HttpStatus.OK).body(message);
 		
 	}
+	
+	
 }

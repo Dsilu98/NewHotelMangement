@@ -52,4 +52,9 @@ public class UserController {
 	}
 	
 	//delete
+	@GetMapping("/ratings/users/{id}")
+	public ResponseEntity<List<Rating>> getRatingsByUserId(@PathVariable String id){
+		List<Rating> ratingByUserId = serviceImpl.getRatingByUserId(id);
+		return new ResponseEntity<>(ratingByUserId,HttpStatus.OK);
+	}
 }

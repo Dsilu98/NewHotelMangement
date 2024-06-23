@@ -33,19 +33,19 @@ public class HotelController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Hotel> getHotelById(@PathVariable String id){
 		Hotel hotel = impl.getHotelById(id);
-		return ResponseEntity.status(HttpStatus.FOUND).body(hotel);
+		return ResponseEntity.status(HttpStatus.OK).body(hotel);
 	}
 	
 	@GetMapping("/")
 	public ResponseEntity<List<Hotel>> getAllHotels(){
 		List<Hotel> allHotels = impl.getAllHotels();
-		return ResponseEntity.status(HttpStatus.FOUND).body(allHotels);
+		return ResponseEntity.status(HttpStatus.OK).body(allHotels);
 	}
 	//update
 	@PutMapping("/{id}")
 	public ResponseEntity<Hotel> updateHotel(@PathVariable String id,@RequestBody Hotel hotel){
 		Hotel updatedHotel = impl.updateHotel(id, hotel);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedHotel);
+		return ResponseEntity.status(HttpStatus.OK).body(updatedHotel);
 	}
 	//delete
 	@DeleteMapping("/{id}")
