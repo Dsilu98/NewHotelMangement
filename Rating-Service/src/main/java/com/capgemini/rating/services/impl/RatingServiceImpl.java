@@ -54,7 +54,7 @@ public class RatingServiceImpl implements RatingService{
 	@Override
 	public List<Rating> getRatingByUserId(String id) {
 		List<Rating> ratingLists = repositories.findByuserId(id);
-//		if(ratingLists.isEmpty()) throw new ResourceNotFound("No Ratins fond!!");
+		if(ratingLists.isEmpty()) throw new ResourceNotFound("No Ratins fond!!");
 		return ratingLists;
 	}
 

@@ -14,8 +14,11 @@ import com.capgemini.hotel.repositories.HotelRepository;
 
 @Service
 public class HotelServiceImpl implements HotelService{
-	@Autowired
-	HotelRepository repository;
+	private HotelRepository repository;
+	
+	public HotelServiceImpl(HotelRepository hotelRepository) {
+		this.repository=hotelRepository;
+	}
 
 	@Override
 	public Hotel createHotel(Hotel hotel) {
@@ -50,7 +53,7 @@ public class HotelServiceImpl implements HotelService{
 	@Override
 	public List<Hotel> getAllHotels() {
 		List<Hotel> allHotels = repository.findAll();
-//		if(allHotels.isEmpty()) throw new ResourceNotFound("Not Hotel Data Present");
+		if(allHotels.isEmpty()) throw new ResourceNotFound("Not Hotel Data Present");
 		
 		return allHotels;
 	}

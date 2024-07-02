@@ -38,19 +38,27 @@ public class UserServiceImpl implements UserServices{
 	public User getUserById(String id) {
 		User user = repository.findById(id).orElseThrow(()->new ResourceNotFound("User not foun with user id : "+id));
 		
-		ResponseEntity<List<Rating>> ratingResponce = ratingService.getRatingsByUserId(id);
-		List<Rating> ratingList = ratingResponce.getBody();
-		if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
-			ratingList.stream()
-				.map(rating->{
-					ResponseEntity<Hotel> hotelResponse= hotelService.getHotelById(rating.getHotelId());
-					Hotel hotel= hotelResponse.getBody();
-					if(hotelResponse.getStatusCode().is2xxSuccessful() && hotel !=null) {
-						rating.setHotel(hotel);
-					}
-					return rating;
-				}).collect(Collectors.toList());
-			user.setRating(ratingList);
+		try {
+			ResponseEntity<List<Rating>> ratingResponce = ratingService.getRatingsByUserId(id);
+			List<Rating> ratingList = ratingResponce.getBody();
+			if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
+				ratingList.stream()
+					.map(rating->{
+						try {
+							ResponseEntity<Hotel> hotelResponse= hotelService.getHotelById(rating.getHotelId());
+							Hotel hotel= hotelResponse.getBody();
+							if(hotelResponse.getStatusCode().is2xxSuccessful() && hotel !=null) {
+								rating.setHotel(hotel);
+							}
+						} catch (Exception e) {
+							rating.setHotel(null);
+						}
+						return rating;
+					}).collect(Collectors.toList());
+				user.setRating(ratingList);
+			}
+		} catch (Exception e) {
+			user.setRating(null);
 		}
 		
 		return user;
@@ -66,24 +74,33 @@ public class UserServiceImpl implements UserServices{
 				
 				String userId = user.getUserId();
 				
-				ResponseEntity<List<Rating>> ratingResponce = ratingService.getRatingsByUserId(userId);
-				List<Rating> ratingList = ratingResponce.getBody();
-				
-				if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
-					ratingList.stream()
-						.map(rating->{
-							ResponseEntity<Hotel> hotelResponse= hotelService.getHotelById(rating.getHotelId());
-							Hotel hotel= hotelResponse.getBody();
-							if(hotelResponse.getStatusCode().is2xxSuccessful() && hotel !=null) {
-								rating.setHotel(hotel);
-							}
-							else {
-								rating.setHotel(null);
-							}
-							return rating;
-						}).collect(Collectors.toList());
-					user.setRating(ratingList);
+				try {
+					ResponseEntity<List<Rating>> ratingResponce = ratingService.getRatingsByUserId(userId);
+					List<Rating> ratingList = ratingResponce.getBody();
+					
+					
+					if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
+						ratingList.stream()
+							.map(rating->{
+								
+								try {
+									ResponseEntity<Hotel> hotelResponse= hotelService.getHotelById(rating.getHotelId());
+									Hotel hotel= hotelResponse.getBody();
+									if(hotelResponse.getStatusCode().is2xxSuccessful() && hotel !=null) {
+										rating.setHotel(hotel);
+									}
+									
+								} catch (Exception e) {
+									rating.setHotel(null);
+								}
+								return rating;
+							}).collect(Collectors.toList());
+						user.setRating(ratingList);
+					}
+				} catch (Exception e) {
+					user.setRating(null);
 				}
+				
 				return user;
 			}).collect(Collectors.toList());
 		
