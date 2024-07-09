@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capgemini.user.dto.UserDto;
 import com.capgemini.user.entities.Rating;
 import com.capgemini.user.entities.User;
 import com.capgemini.user.services.impl.UserServiceImpl;
@@ -28,26 +29,26 @@ public class UserController {
 	
 	//create
 	@PostMapping("/")
-	public ResponseEntity<User> createUser(@RequestBody User user){
-		User creteUser = serviceImpl.creteUser(user);
+	public ResponseEntity<UserDto> createUser(@RequestBody UserDto user){
+		UserDto creteUser = serviceImpl.creteUser(user);
 		return ResponseEntity.status(HttpStatus.CREATED).body(creteUser);
 	}
 	//read
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getuserById(@PathVariable String id){
-		User userById = serviceImpl.getUserById(id);
+	public ResponseEntity<UserDto> getuserById(@PathVariable String id){
+		UserDto userById = serviceImpl.getUserById(id);
 		return ResponseEntity.status(HttpStatus.FOUND).body(userById);
 	}
 	
 	@GetMapping("/")
-	public ResponseEntity<List<User>> getUsers(){
-		 List<User> allUsers = serviceImpl.getAllUsers();
+	public ResponseEntity<List<UserDto>> getUsers(){
+		 List<UserDto> allUsers = serviceImpl.getAllUsers();
 		return ResponseEntity.status(HttpStatus.FOUND).body(allUsers);
 	}
 	//update
 	@PutMapping("/{id}")
-	public ResponseEntity<User> updateUser(@PathVariable String id,@RequestBody User user){
-		User updateUser = serviceImpl.updateUser(id, user);
+	public ResponseEntity<UserDto> updateUser(@PathVariable String id,@RequestBody UserDto user){
+		UserDto updateUser = serviceImpl.updateUser(id, user);
 		return ResponseEntity.status(HttpStatus.OK).body(updateUser);
 	}
 	

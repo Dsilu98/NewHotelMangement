@@ -1,13 +1,18 @@
 package com.capgemini.user.services.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.capgemini.user.dto.HotelDto;
+import com.capgemini.user.dto.RatingDto;
+import com.capgemini.user.dto.UserDto;
 import com.capgemini.user.entities.Hotel;
 import com.capgemini.user.entities.Rating;
 import com.capgemini.user.entities.User;
@@ -26,16 +31,22 @@ public class UserServiceImpl implements UserServices{
 	@Autowired 
 	private HotelService hotelService;
 	
+	@Autowired
+	ModelMapper mapper;
+	
 	@Override
-	public User creteUser(User user) {
+	public UserDto creteUser(UserDto userDto) {
+		User user = new User();
 		String arndomId = UUID.randomUUID().toString();
 		user.setUserId(arndomId);
 		
-		return repository.save(user);
+		user =repository.save(user);
+		
+		return this.userToUserDto(user);
 	}
 
 	@Override
-	public User getUserById(String id) {
+	public UserDto getUserById(String id) {
 		User user = repository.findById(id).orElseThrow(()->new ResourceNotFound("User not foun with user id : "+id));
 		
 		try {
@@ -58,14 +69,14 @@ public class UserServiceImpl implements UserServices{
 				user.setRating(ratingList);
 			}
 		} catch (Exception e) {
-			user.setRating(null);
+			user.setRating(Collections.EMPTY_LIST);
 		}
 		
-		return user;
+		return this.userToUserDto(user);
 	}
 
 	@Override
-	public List<User> getAllUsers() {
+	public List<UserDto> getAllUsers() {
 		List<User> allUser = repository.findAll();
 		if(allUser.isEmpty()) throw new ResourceNotFound("No users found");
 		
@@ -98,23 +109,23 @@ public class UserServiceImpl implements UserServices{
 						user.setRating(ratingList);
 					}
 				} catch (Exception e) {
-					user.setRating(null);
+					user.setRating(Collections.EMPTY_LIST);
 				}
 				
 				return user;
 			}).collect(Collectors.toList());
 		
-		return allUser;
+		return this.userListToDtoList(allUser);
 	}
 
 	@Override
-	public User updateUser(String id, User userDetails) {
+	public UserDto updateUser(String id, UserDto userDetails) {
 		User existingUser = repository.findById(id).orElseThrow(()->new ResourceNotFound("User not foun with user id : "+id));
 		existingUser.setAbout(userDetails.getAbout());
 		existingUser.setEmail(userDetails.getEmail());
 		existingUser.setName(userDetails.getName());
 		
-		return existingUser;
+		return this.userToUserDto(existingUser);
 	}
 
 	@Override
@@ -129,7 +140,44 @@ public class UserServiceImpl implements UserServices{
 		if(ratingResponce.getStatusCode().is2xxSuccessful() && ratingList != null) {
 			return ratingList;
 		}
-		return null;
+		return Collections.EMPTY_LIST;
 	}
-
+	
+	
+	
+	public HotelDto hotelToHotelDto(Hotel hotel) {
+		return mapper.map(hotel, HotelDto.class);
+	}
+	
+	public RatingDto ratingToRatingDto(Rating rating) {
+		RatingDto dto = new RatingDto();
+		dto = mapper.map(rating, RatingDto.class);
+		dto.setHotelDto(mapper.map(rating.getHotel(),HotelDto.class));
+		return dto;
+	}
+	
+	public List<RatingDto> ratingListToDtoList(List<Rating> ratings){
+		List<RatingDto> ratingDtos=
+				ratings.stream()
+					.map(ele->ratingToRatingDto(ele))
+					.collect(Collectors.toList());
+		return ratingDtos;
+	}
+	
+	public  UserDto userToUserDto(User user) {
+		UserDto userDto = new UserDto();
+		userDto = mapper.map(user, UserDto.class);
+		userDto.setRatingDtos(this.ratingListToDtoList(user.getRating()));
+		
+		return userDto;
+	}
+	
+	public List<UserDto> userListToDtoList(List<User> users){
+		List<UserDto> userDtos =
+				users.stream()
+					.map(ele->this.userToUserDto(ele))
+					.collect(Collectors.toList());
+		return userDtos;
+	}
+	
 }
